@@ -1,24 +1,19 @@
 <?php
 namespace PayGate\PayHost;
 
+/**
+ * Class Helper
+ *
+ * @package PayGate\PayHost
+ */
 class Helper {
-	private static $ns = 'ns1';
-	
-	private static function object_empty($obj){
-		if(is_object($obj)){
-			foreach($obj as $item){
-				if($item != null){
-					return false;
-				}
-			}
-			return true;
-		}
-
-		return true;
-	}
-
-	private static $inputMap = array(
-		'Account'               => array(
+	/**
+	 * @var array
+	 *
+	 * example of input map:
+	 *
+	 * $inputMap = array(
+			'Account'               => array(
 			'PayGateId' => 'pgid',
 			'Password'  => 'encryptionKey'
 		),
@@ -88,8 +83,7 @@ class Helper {
 		),
 		'CardPaymentRequest' => array(
 			'CardNumber' => null,
-		    'CardExpiryDate' => null,
-		    ''
+			'CardExpiryDate' => null,
 		),
 		'AirlineBookingDetails' => array(
 			'TicketNumber'         => 'ticketNumber',
@@ -129,7 +123,12 @@ class Helper {
 			'BaseFareCurrency'         => null
 		)
 	);
-
+	 */
+	public $inputMap;
+	/**
+	 * @var string
+	 */
+	private static $ns = 'ns1';
 	/**
 	 * @var types\SinglePaymentRequest
 	 */
@@ -199,6 +198,23 @@ class Helper {
 	 */
 	private $AirlineBookingDetails;
 
+	public function __construct($inputMap){
+		$this->inputMap = $inputMap;
+	}
+
+	private static function object_empty($obj){
+		if(is_object($obj)){
+			foreach($obj as $item){
+				if($item != null){
+					return false;
+				}
+			}
+			return true;
+		}
+
+		return true;
+	}
+
 	public function setWebPaymentRequestMessage($post){
 		$this->setWebPaymentRequest($post)
 		     ->setSinglePaymentRequest('WebPaymentRequest');
@@ -230,7 +246,7 @@ class Helper {
 
 	private function setAccount(array $post){
 		$Account = new types\Account();
-		foreach(self::$inputMap['Account'] as $var => $input){
+		foreach($this->inputMap['Account'] as $var => $input){
 			self::setLocalVar($post, $Account, $var, $input);
 		}
 
@@ -251,7 +267,7 @@ class Helper {
 			$Address->setAddressLine($addressLines);
 		}
 
-		foreach(self::$inputMap['Address'] as $var => $input){
+		foreach($this->inputMap['Address'] as $var => $input){
 			if($var != 'AddressLine'){
 				self::setLocalVar($post, $Address, $var, $input);
 			}
@@ -265,7 +281,7 @@ class Helper {
 	private function setCustomer(array $post){
 		$Customer = new types\Customer();
 
-		foreach(self::$inputMap['Customer'] as $var => $input){
+		foreach($this->inputMap['Customer'] as $var => $input){
 			self::setLocalVar($post, $Customer, $var, $input);
 		}
 
@@ -281,11 +297,11 @@ class Helper {
 
 	private function setPaymentType(array $post){
 
-		if(!empty($post[self::$inputMap['PaymentType']['Method']]) || !empty($post[self::$inputMap['PaymentType']['Detail']])){
+		if(!empty($post[$this->inputMap['PaymentType']['Method']]) || !empty($post[$this->inputMap['PaymentType']['Detail']])){
 
 			$PaymentType = new types\PaymentType();
 
-			foreach(self::$inputMap['PaymentType'] as $var => $input){
+			foreach($this->inputMap['PaymentType'] as $var => $input){
 				self::setLocalVar($post, $PaymentType, $var, $input);
 			}
 
@@ -298,7 +314,7 @@ class Helper {
 	private function setRedirect(array $post){
 		$Redirect = new types\Redirect();
 
-		foreach(self::$inputMap['Redirect'] as $var => $input){
+		foreach($this->inputMap['Redirect'] as $var => $input){
 			self::setLocalVar($post, $Redirect, $var, $input);
 		}
 
@@ -310,7 +326,7 @@ class Helper {
 	private function setOrder(array $post){
 		$Order = new types\Order();
 
-		foreach(self::$inputMap['Order'] as $var => $input){
+		foreach($this->inputMap['Order'] as $var => $input){
 			self::setLocalVar($post, $Order, $var, $input);
 		}
 
@@ -343,10 +359,10 @@ class Helper {
 	}
 
 	private function setUserDefinedFields(array $post){
-		for($i=1; !empty($post[self::$inputMap['UserDefinedFields']['key'] . $i]) && !empty($post[self::$inputMap['UserDefinedFields']['value'] . $i]); $i++){
+		for($i=1; !empty($post[$this->inputMap['UserDefinedFields']['key'] . $i]) && !empty($post[$this->inputMap['UserDefinedFields']['value'] . $i]); $i++){
 			$UserDefinedFields = new types\UserDefinedFields();
-			$UserDefinedFields->setKey($post[self::$inputMap['UserDefinedFields']['key'] . $i])
-			                  ->setValue($post[self::$inputMap['UserDefinedFields']['value'] . $i]);
+			$UserDefinedFields->setKey($post[$this->inputMap['UserDefinedFields']['key'] . $i])
+			                  ->setValue($post[$this->inputMap['UserDefinedFields']['value'] . $i]);
 
 			$this->UserDefinedFields[] = $UserDefinedFields;
 		}
@@ -374,7 +390,7 @@ class Helper {
 			$ShippingDetails->setCustomer($this->Customer)
 							->setAddress($this->Address);
 
-			foreach(self::$inputMap['ShippingDetails'] as $var => $input){
+			foreach($this->inputMap['ShippingDetails'] as $var => $input){
 				self::setLocalVar($post, $ShippingDetails, $var, $input);
 			}
 
@@ -387,7 +403,7 @@ class Helper {
 	private function setAirlineBookingDetails(array $post){
 		$AirlineBookingDetails = new types\AirlineBookingDetails();
 
-		foreach(self::$inputMap['AirlineBookingDetails'] as $var => $input){
+		foreach($this->inputMap['AirlineBookingDetails'] as $var => $input){
 			self::setLocalVar($post, $AirlineBookingDetails, $var, $input);
 		}
 
@@ -410,7 +426,7 @@ class Helper {
 	private function setFlightLegs(array $post){
 		$FlightLegs = new types\FlightLegs();
 
-		foreach(self::$inputMap['FlightLegs'] as $var => $input){
+		foreach($this->inputMap['FlightLegs'] as $var => $input){
 			self::setLocalVar($post, $FlightLegs, $var, $input);
 		}
 
@@ -422,7 +438,7 @@ class Helper {
 	private function setPassengers(array $post){
 		$Passengers = new types\Passengers();
 
-		foreach(self::$inputMap['Passengers'] as $var => $input){
+		foreach($this->inputMap['Passengers'] as $var => $input){
 			self::setLocalVar($post, $Passengers, $var, $input);
 		}
 
@@ -477,7 +493,7 @@ class Helper {
 		$CardPaymentRequest->setAccount($this->Account)
 		                   ->setCustomer($this->Customer);
 
-		foreach(self::$inputMap['CardPaymentRequest'] as $var => $input){
+		foreach($this->inputMap['CardPaymentRequest'] as $var => $input){
 			self::setLocalVar($post, $CardPaymentRequest, $var, $input);
 		}
 
