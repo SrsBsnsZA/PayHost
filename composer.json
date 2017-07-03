@@ -1,5 +1,6 @@
 {
   "name": "PayGate/PayHost",
+  "version": "0.1",
   "type": "library",
   "description": "Merchant integration helper in PHP",
   "authors": [
