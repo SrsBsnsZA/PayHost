@@ -175,7 +175,7 @@ class Helper {
 	 */
 	private $Risk;
 	/**
-	 * @var types\UserDefinedFields
+	 * @var array
 	 */
 	private $UserDefinedFields;
 	/**
@@ -212,7 +212,6 @@ class Helper {
 
 		return $this->getSinglePaymentRequest();
 	}
-
 
 	/**
 	 * @param array  $post
@@ -343,6 +342,18 @@ class Helper {
 		return $this;
 	}
 
+	private function setUserDefinedFields(array $post){
+		for($i=1; !empty($post[self::$inputMap['UserDefinedFields']['key'] . $i]) && !empty($post[self::$inputMap['UserDefinedFields']['value'] . $i]); $i++){
+			$UserDefinedFields = new types\UserDefinedFields();
+			$UserDefinedFields->setKey($post[self::$inputMap['UserDefinedFields']['key'] . $i])
+			                  ->setValue($post[self::$inputMap['UserDefinedFields']['value'] . $i]);
+
+			$this->UserDefinedFields[] = $UserDefinedFields;
+		}
+
+		return $this;
+	}
+
 	private function setBillingDetails(array $post){
 		if(!empty($post['incBilling'])){
 			$BillingDetails = new types\BillingDetails();
@@ -443,8 +454,10 @@ class Helper {
 		if(!empty($this->Risk)){
 			$WebPaymentRequest->setRisk($this->Risk);
 		}
-		if(!empty($this->UserFields)){
-			$WebPaymentRequest->setUserDefinedFields(array());
+
+		$this->setUserDefinedFields($post);
+		if(!empty($this->UserDefinedFields)){
+			$WebPaymentRequest->setUserDefinedFields($this->UserDefinedFields);
 		}
 
 		$this->WebPaymentRequest = $WebPaymentRequest;
@@ -490,18 +503,16 @@ class Helper {
 
 	// functions adopted from http://www.sean-barton.co.uk/2009/03/turning-an-array-or-object-into-xml-using-php/
 
-	public static function generateValidXmlFromObj($obj, $node_block = 'nodes', $node_name = 'node'){
+	public static function generateValidXmlFromObj($obj, $node_block = '', $node_name = ''){
 		$arr = get_object_vars($obj);
 
 		return self::generateValidXmlFromArray($arr, $node_block, $node_name);
 	}
 
-	public static function generateValidXmlFromArray($array, $node_block = 'nodes', $node_name = 'node'){
-		$xml = '';
-
-		$xml .= '<' . self::$ns . ':' . $node_block . '>';
-		$xml .= self::generateXmlFromArray($array, $node_name);
-		$xml .= '</' . self::$ns . ':' . $node_block . '>';
+	public static function generateValidXmlFromArray($array, $node_block = '', $node_name = ''){
+		$xml = '<' . self::$ns . ':' . $node_block . '>'. PHP_EOL;
+		$xml .= self::generateXmlFromArray($array, $node_name) . PHP_EOL;
+		$xml .= '</' . self::$ns . ':' . $node_block . '>' . PHP_EOL;
 
 		return $xml;
 	}
@@ -511,13 +522,15 @@ class Helper {
 
 		if(is_array($array) || is_object($array)){
 			foreach($array as $key => $value){
-				if(is_numeric($key)){
-					$key = $node_name;
-				}
+				if(is_array($value)){
+					foreach($value as $item){
+						$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($item, $node_name) . '</' . self::$ns . ':' . $key . '>';
+					}
+				} else
 
-				if(!empty($value)){
-					$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($value, $node_name) . '</' . self::$ns . ':' . $key . '>';
-				}
+					if(!empty($value)){
+						$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($value, $node_name) . '</' . self::$ns . ':' . $key . '>';
+					}
 			}
 		} else {
 			$xml = htmlspecialchars($array, ENT_QUOTES);
@@ -597,7 +610,7 @@ class Helper {
 	}
 
 	/**
-	 * @return types\UserDefinedFields
+	 * @return array
 	 */
 	public function getUserDefinedFields(){
 		return $this->UserDefinedFields;
