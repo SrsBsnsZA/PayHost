@@ -1,0 +1,19 @@
+{
+  "name": "PayGate/PayHost",
+  "type": "library",
+  "description": "Merchant integration helper in PHP",
+  "authors": [
+	{
+	  "name": "Hanno Avenant",
+	  "email": "hannoa@paygate.co.za"
+	}
+  ],
+  "require": {
+	"php": ">=5.0.0"
+  },
+  "autoload": {
+	"psr-4": {
+	  "PayGate\\PayHost\\": "PayHost"
+	}
+  }
+}
