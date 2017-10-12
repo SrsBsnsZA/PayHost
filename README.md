@@ -11,7 +11,7 @@ Add a `composer.json` file to your project:
 ```javascript
 {
   "require": {
-      "PayGate/PayHost": "1.*"
+      "paygate/payhost-helper": "1.0.2"
   }
 }
 ```
