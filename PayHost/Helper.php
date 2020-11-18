@@ -1,5 +1,5 @@
 <?php
-namespace PayGate\PayHost;
+namespace SrsBsns\PayHost;
 
 /**
  * Class Helper
@@ -235,14 +235,19 @@ class Helper {
 	 * @param string $var
 	 * @param string $input
 	 */
-	private function setLocalVar($post, $Class, $var, $input){
-		if(!empty($input)){
-			if(!empty($post[$input])){
-				$method = "set$var";
-				$Class->{$method}($post[$input]);
-			}
-		}
-	}
+    private function setLocalVar($post, $Class, $var, $input){
+        //dump($post);
+
+        if((!empty($input)) || ($input === 0) ){
+            if(!empty($post[$var]) || ($input === 0)){
+                $method = "set$var";
+                $Class->{$method}($post[$var]);
+            }
+        }
+        else{
+            dump("empty ".$var);
+        }
+    }
 
 	private function setAccount(array $post){
 		$Account = new types\Account();
@@ -481,29 +486,30 @@ class Helper {
 		return $this;
 	}
 
-	private function setCardPaymentRequest($post){
-		$this->setAccount($post)
-		     ->setCustomer($post)
-		     ->setPaymentType($post)
-		     ->setRedirect($post)
-		     ->setOrder($post);
+    private function setCardPaymentRequest($post){
+        $this->setAccount($post['Account'])
+            ->setCustomer($post['Customer'])
+            ->setPaymentType($post['PaymentType'])
+            ->setRedirect($post['Redirect'])
+            ->setOrder($post['Order']);
+        //dump($this->getAccount());
+        $CardPaymentRequest = new types\CardPaymentRequest();
 
-		$CardPaymentRequest = new types\CardPaymentRequest();
+        $CardPaymentRequest->setAccount($this->Account)
+            ->setCustomer($this->Customer);
 
-		$CardPaymentRequest->setAccount($this->Account)
-		                   ->setCustomer($this->Customer);
+        foreach($this->inputMap['CardPaymentRequest'] as $var => $input){
+            //dump($this->inputMap['CardPaymentRequest']);
+            self::setLocalVar($post['CardPaymentRequest'], $CardPaymentRequest, $var, $input);
+        }
 
-		foreach($this->inputMap['CardPaymentRequest'] as $var => $input){
-			self::setLocalVar($post, $CardPaymentRequest, $var, $input);
-		}
+        $CardPaymentRequest->setRedirect($this->Redirect)
+            ->setOrder($this->Order);
 
-		$CardPaymentRequest->setRedirect($this->Redirect)
-		                   ->setOrder($this->Order);
+        $this->CardPaymentRequest = $CardPaymentRequest;
 
-		$this->CardPaymentRequest = $CardPaymentRequest;
-
-		return $this;
-	}
+        return $this;
+    }
 
 	private function setSinglePaymentRequest($type){
 		$SinglePaymentRequest = new types\SinglePaymentRequest();
@@ -513,7 +519,7 @@ class Helper {
 		$SinglePaymentRequest->{$call}($this->{$type});
 
 		$this->SinglePaymentRequest = $SinglePaymentRequest;
-
+        dump($this->SinglePaymentRequest);
 		return $this;
 	}
 

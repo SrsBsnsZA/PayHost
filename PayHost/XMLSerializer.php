@@ -1,5 +1,7 @@
 <?php
 
+namespace SrsBsns\PayHost;
+
 class XMLSerializer {
 
 	private static $ns = 'ns1';

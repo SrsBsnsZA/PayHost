@@ -1,10 +1,14 @@
 {
-  "name": "paygate/payhost-helper",
+  "name": "srsbsns/payhost-helper",
   "description": "Merchant integration helper in PHP",
   "authors": [
     {
       "name": "Hanno Avenant",
       "email": "hannoa@paygate.co.za"
+    },
+    {
+      "name": "Colin Amis",
+      "email": "colin@srsbsns.co.za"
     }
   ],
   "require": {
@@ -12,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "PayGate\\PayHost\\": "PayHost"
+      "SrsBsns\\PayHost\\": "PayHost"
     },
     "files": [
       "PayHost/XMLSerializer.php"

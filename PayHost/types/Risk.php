@@ -1,5 +1,5 @@
 <?php
-namespace PayGate\PayHost\types;
+namespace SrsBsns\PayHost\types;
 
 class Risk {
 	/**
