@@ -36,30 +36,21 @@ class XMLSerializer {
     }
 	private static function generateXmlFromArray($array, $node_name){
 		$xml = '';
-        dump($array);
-//        dump($node_name);
 		if(is_array($array) || is_object($array)){
 			foreach($array as $key => $value){
-                dump($key);
-               // dump($value);
 				if(is_array($value)){
-				    dump("array");
 					foreach($value as $item){
-						$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($item, $key) . '</' . self::$ns . ':' . $key . '>';
+						$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($item, $node_name) . '</' . self::$ns . ':' . $key . '>';
 					}
 				} else
 
 				if(!empty($value)){
-				    dump("value");
-					$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($value, $key) . '</' . self::$ns . ':' . $key . '>';
+					$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($value, $node_name) . '</' . self::$ns . ':' . $key . '>';
 				}
 			}
 		} else {
-		    //dump("something else");
-		    //dump($array);
 			$xml = htmlspecialchars($array, ENT_QUOTES);
 		}
-        //dump($xml);
 		return $xml;
 	}
 
