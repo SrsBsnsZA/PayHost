@@ -46,4 +46,9 @@ class Account {
 
 		return $this;
 	}
+
+	public function getArray()
+    {
+        return ['PayGateId'=>$this->getPayGateId(),'Password'=>$this->getPassword()];
+    }
 }

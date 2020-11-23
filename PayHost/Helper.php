@@ -1,6 +1,11 @@
 <?php
 namespace SrsBsns\PayHost;
 
+use SrsBsns\PayHost\types\DeleteVaultRequest;
+use SrsBsns\PayHost\types\LookupVaultRequest;
+use SrsBsns\PayHost\types\SingleVaultRequest;
+use SrsBsns\PayHost\types\VaultRequest;
+
 /**
  * Class Helper
  *
@@ -197,6 +202,23 @@ class Helper {
 	 * @var types\AirlineBookingDetails
 	 */
 	private $AirlineBookingDetails;
+
+    /**
+     * @var SingleVaultRequest $singleVaultRequest
+     */
+	private $singleVaultRequest;
+    /**
+     * @var DeleteVaultRequest $deleteVaultRequest
+     */
+	private $deleteVaultRequest;
+    /**
+     * @var LookupVaultRequest $lookupVaultRequest
+     */
+	private $lookupVaultRequest;
+    /**
+     * @var VaultRequest $vaultRequest
+     */
+	private $vaultRequest;
 
 	public function __construct($inputMap){
 		$this->inputMap = $inputMap;
@@ -511,6 +533,39 @@ class Helper {
         return $this;
     }
 
+    /**
+     * @return SingleVaultRequest
+     */
+    public function getSingleVaultRequest()
+    {
+        return $this->singleVaultRequest;
+    }
+
+    /**
+     * @param SingleVaultRequest $singleVaultRequest
+     */
+    public function setSingleVaultRequest($singleVaultRequest)
+    {
+        $this->singleVaultRequest = $singleVaultRequest;
+    }
+
+    /**
+     * @return DeleteVaultRequest
+     */
+    public function getDeleteVaultRequest()
+    {
+        return $this->deleteVaultRequest;
+    }
+
+    /**
+     * @param DeleteVaultRequest $deleteVaultRequest
+     */
+    public function setDeleteVaultRequest($deleteVaultRequest)
+    {
+        $this->deleteVaultRequest = $deleteVaultRequest;
+    }
+
+
 	private function setSinglePaymentRequest($type){
 		$SinglePaymentRequest = new types\SinglePaymentRequest();
 
@@ -519,9 +574,16 @@ class Helper {
 		$SinglePaymentRequest->{$call}($this->{$type});
 
 		$this->SinglePaymentRequest = $SinglePaymentRequest;
-        dump($this->SinglePaymentRequest);
+        //dump($this->SinglePaymentRequest);
 		return $this;
 	}
+
+	public static function generateValidVaultXmlFromObj($obj, $node_block = '', $node_name = '')
+    {
+        $arr = $obj->getArray();
+        dump($arr);
+        return self::generateValidXmlFromArray($arr, $node_block, $node_name);
+    }
 
 	// functions adopted from http://www.sean-barton.co.uk/2009/03/turning-an-array-or-object-into-xml-using-php/
 
@@ -544,6 +606,7 @@ class Helper {
 
 		if(is_array($array) || is_object($array)){
 			foreach($array as $key => $value){
+
 				if(is_array($value)){
 					foreach($value as $item){
 						$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($item, $node_name) . '</' . self::$ns . ':' . $key . '>';
@@ -672,5 +735,37 @@ class Helper {
 	public function getAirlineBookingDetails(){
 		return $this->AirlineBookingDetails;
 	}
+
+    /**
+     * @return LookupVaultRequest
+     */
+    public function getLookupVaultRequest()
+    {
+        return $this->lookupVaultRequest;
+    }
+
+    /**
+     * @param LookupVaultRequest $lookupVaultRequest
+     */
+    public function setLookupVaultRequest($lookupVaultRequest)
+    {
+        $this->lookupVaultRequest = $lookupVaultRequest;
+    }
+
+    /**
+     * @return VaultRequest
+     */
+    public function getVaultRequest()
+    {
+        return $this->vaultRequest;
+    }
+
+    /**
+     * @param VaultRequest $vaultRequest
+     */
+    public function setVaultRequest($vaultRequest)
+    {
+        $this->vaultRequest = $vaultRequest;
+    }
 
 }

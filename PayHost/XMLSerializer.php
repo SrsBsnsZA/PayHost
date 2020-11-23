@@ -2,6 +2,8 @@
 
 namespace SrsBsns\PayHost;
 
+use SrsBsns\PayHost\types\SingleVaultRequest;
+
 class XMLSerializer {
 
 	private static $ns = 'ns1';
@@ -22,25 +24,42 @@ class XMLSerializer {
 		return $xml;
 	}
 
+	public static function generateVaultXml(SingleVaultRequest $singleVaultRequest)
+    {
+        $xml = '';
+        $xml .= "<".self::$ns.":SingleVaultRequest><".self::$ns.":CardVaultRequest><".self::$ns.":Account><".self::$ns.":PayGateId>".$singleVaultRequest->getCardVaultRequest()->getAccount()->getPayGateId().
+            "</".self::$ns.":PayGateId><".self::$ns.":Password>".$singleVaultRequest->getCardVaultRequest()->getAccount()->getPassword().
+            "</".self::$ns.":Password></".self::$ns.":Account><".self::$ns.":CardNumber>".$singleVaultRequest->getCardVaultRequest()->getCardNumber()."</".self::$ns.":CardNumber>".
+            "</".self::$ns.":CardNumber><".self::$ns."CardExpiryDate>".$singleVaultRequest->getCardVaultRequest()->getCardExpiryDate()."</".self::$ns.":CardExpiryDate>".
+            "</".self::$ns.":CardVaultRequest></".self::$ns.":SingleVaultRequest>";
+        return $xml;
+    }
 	private static function generateXmlFromArray($array, $node_name){
 		$xml = '';
-
+        dump($array);
+//        dump($node_name);
 		if(is_array($array) || is_object($array)){
 			foreach($array as $key => $value){
+                dump($key);
+               // dump($value);
 				if(is_array($value)){
+				    dump("array");
 					foreach($value as $item){
-						$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($item, $node_name) . '</' . self::$ns . ':' . $key . '>';
+						$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($item, $key) . '</' . self::$ns . ':' . $key . '>';
 					}
 				} else
 
 				if(!empty($value)){
-					$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($value, $node_name) . '</' . self::$ns . ':' . $key . '>';
+				    dump("value");
+					$xml .= '<' . self::$ns . ':' . $key . '>' . self::generateXmlFromArray($value, $key) . '</' . self::$ns . ':' . $key . '>';
 				}
 			}
 		} else {
+		    //dump("something else");
+		    //dump($array);
 			$xml = htmlspecialchars($array, ENT_QUOTES);
 		}
-
+        //dump($xml);
 		return $xml;
 	}
 
